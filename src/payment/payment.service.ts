@@ -7,29 +7,27 @@ export class PaymentService {
 
     constructor(private httpService: HttpService) {}
 
-    async getSubscriber(msisdn: string): Promise<any> {
-        let x = new Check();
+    async getSubscriber(msisdn: string): Promise<Check> {
+        let x: Check = new Check();
         x.msisdn = msisdn;
-        let resp = fetch(
-            'http://127.0.0.1:3000/check', 
-            { method: "POST", body: JSON.stringify({ "msisdn": msisdn }) },
-        );
-        return await resp.json();
-/*      resp.subscribe(
-            body => {
-                console.log(body);
-                x.account = body.data.account;
-                return x;
-            }
-        );
-        return x;*/
+
+        let promise = new Promise((resolve, reject) => {
+            this.httpService.post('http://127.0.0.1:3000/check', { "msisdn": msisdn })
+            .subscribe(body => {
+                    x.account = body.data.account;
+                    x.status = body.data.status;
+                    resolve(x);
+            });
+        });
+        await promise;
+        return x;
     }
 
     async payment(x: Payment): Promise<Payment> {
         try {
-            const subscriber = await this.getSubscriber(x.msisdn);
-            
-            console.log(subscriber);
+            const y = await this.getSubscriber(x.msisdn);
+            // TODO:
+
             return x;
         } catch (error) {
             console.error(error);
