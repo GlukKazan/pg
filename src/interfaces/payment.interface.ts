@@ -5,7 +5,7 @@ export class Payment {
     @ApiProperty()
     msisdn: string;
     
-    @ApiProperty()
+    @ApiPropertyOptional()
     date: Date;
 
     @ApiProperty()
@@ -17,6 +17,9 @@ export class Payment {
     @ApiProperty()
     code: number;
 
+    @ApiPropertyOptional()
+    message: string;
+    
     @ApiPropertyOptional()
     balance: number;
 }

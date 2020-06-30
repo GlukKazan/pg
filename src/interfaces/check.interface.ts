@@ -10,4 +10,7 @@ export class Check {
 
     @ApiPropertyOptional()
     account: number;
+
+    @ApiPropertyOptional()
+    message: string;
 }
