@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, HttpStatus, HttpService } fro
 import { Payment } from 'src/interfaces/payment.interface';
 import { Check } from 'src/interfaces/check.interface';
 import { DatabaseService } from 'src/database/database.service';
+import OracleDB = require('oracledb');
 
 @Injectable()
 export class PaymentService {
@@ -43,10 +44,25 @@ export class PaymentService {
                     :customer,
                     :external,
                     to_date(:date, 'YYYY-MM-DD HH24:MI:SS'),
-                    :value
+                    :value,
+                    :balance,
+                    :status,
+                    :is_forced
                 );
-             end;`, [account, x.operation, date.substr(0, 10) + " " + date.substr(11, 8), x.sum]
+             end;`, 
+             {
+                customer: { dir: OracleDB.BIND_IN, val: account, type: OracleDB.NUMBER },
+                external: { dir: OracleDB.BIND_IN, val: x.operation, type: OracleDB.STRING },
+                date: { dir: OracleDB.BIND_IN, val: date.substr(0, 10) + " " + date.substr(11, 8), type: OracleDB.STRING },
+                value: { dir: OracleDB.BIND_IN, val: x.sum, type: OracleDB.NUMBER },
+                balance: { dir: OracleDB.BIND_OUT, type: OracleDB.NUMBER },
+                status: { dir: OracleDB.BIND_OUT, type: OracleDB.NUMBER },
+                is_forced: { dir: OracleDB.BIND_IN, val: 0, type: OracleDB.NUMBER }
+             }
         );
+
+        console.log(sp.outBinds);
+
         const result = await this.database.getByQuery(
             `select BALANCE_VALUE from BALANCE where ID = :id`, [account]
         );

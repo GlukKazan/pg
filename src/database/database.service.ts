@@ -9,7 +9,7 @@ export class DatabaseService {
 
   async getByQuery<T>(
     query: string, 
-    params: Array<string | number>
+    params?: Array<string | number> | { [key: string]: OracleDB.BindParameter }
   ): Promise<OracleDB.Result<T>> {
     return await this.connection.execute(query, params);
   }
