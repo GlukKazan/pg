@@ -40,7 +40,7 @@ export class PaymentService {
         const date = x.date.toISOString();
         const sp = await this.database.getByQuery(
             `begin
-                add_payment(
+                pg_package.add_payment(
                     :customer,
                     :external,
                     to_date(:date, 'YYYY-MM-DD HH24:MI:SS'),
@@ -63,12 +63,14 @@ export class PaymentService {
 
         console.log(sp.outBinds);
 
-        const result = await this.database.getByQuery(
+/*      const result = await this.database.getByQuery(
             `select BALANCE_VALUE from BALANCE where ID = :id`, [account]
         );
         if (result.rows.length > 0) {
             x.balance = result.rows[0][0];
-        }
+        }*/
+
+//      x.balance = sp.outBinds.balance;
         return x;
     }
 
